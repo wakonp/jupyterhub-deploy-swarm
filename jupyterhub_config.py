@@ -14,6 +14,7 @@ c = get_config()
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image
 c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
+c.DockerSpawner.container_ip = '0.0.0.0'
 # JupyterHub requires a single-user instance of the Notebook server, so we
 # default to using the `start-singleuser.sh` script included in the
 # jupyter/docker-stacks *-notebook images as the Docker run command when
@@ -52,8 +53,17 @@ c.JupyterHub.ssl_key = os.environ['SSL_KEY']
 c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with GitHub OAuth
-c.JupyterHub.authenticator_class = 'oauthenticator.GitHubOAuthenticator'
-c.GitHubOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
+#c.JupyterHub.authenticator_class = 'oauthenticator.GitHubOAuthenticator'
+#c.GitHubOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
+c.LocalAuthenticator.create_system_users = True
+c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
+c.LDAPAuthenticator.server_address = '10.25.1.6'
+c.LDAPAuthenticator.server_port = 636
+c.LDAPAuthenticator.lookup_dn = True
+c.LDAPAuthenticator.user_search_base = 'OU=technikum,DC=technikum,dc=fh-joanneum,dc=local'
+c.LDAPAuthenticator.user_attribute = 'sAMAccountName'
+c.LDAPAuthenticator.use_ssl = True
+c.JupyterHub.log_level = 'DEBUG'
 
 # Persist hub data on volume mounted inside container
 data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
@@ -62,7 +72,7 @@ c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
     'jupyterhub_cookie_secret')
 
 # Whitlelist users and admins
-c.Authenticator.whitelist = whitelist = set()
+#c.Authenticator.whitelist = whitelist = set()
 c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
 pwd = os.path.dirname(__file__)
@@ -72,6 +82,6 @@ with open(os.path.join(pwd, 'userlist')) as f:
             continue
         parts = line.split()
         name = parts[0]
-        whitelist.add(name)
+        #whitelist.add(name)
         if len(parts) > 1 and parts[1] == 'admin':
             admin.add(name)

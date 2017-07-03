@@ -2,45 +2,58 @@
 # Distributed under the terms of the Modified BSD License.
 
 # JupyterHub docker-compose configuration file
-version: "2"
+version: "3.2"
 
 services:
-  hub:
+  jupyterhub:
     build:
       context: .
       dockerfile: Dockerfile.jupyterhub
     image: jupyterhub
     container_name: jupyterhub
     volumes:
-      # Bind Docker socket on the host so we can connect to the daemon from
-      # within the container
-      - "/var/run/docker.sock:/var/run/docker.sock:rw"
-      # Bind Docker volume on host for JupyterHub database and cookie secrets
-      - "data:${DATA_VOLUME_CONTAINER}"
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: volume
+        source: data
+        target: /data
+        volume: 
+          nocopy: true
     ports:
       - "443:443"
     environment:
       # All containers will join this network
-      DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
+      DOCKER_NETWORK_NAME: jupyterhub-network
       # JupyterHub will spawn this Notebook image for users
-      DOCKER_NOTEBOOK_IMAGE: ${DOCKER_NOTEBOOK_IMAGE}
+      DOCKER_NOTEBOOK_IMAGE: jupyter/scipy-notebook:bb222f49222e
       # Notebook directory inside user image
-      DOCKER_NOTEBOOK_DIR: ${DOCKER_NOTEBOOK_DIR}
+      DOCKER_NOTEBOOK_DIR: /home/jovyan/work
       # Using this run command (optional)
-      DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
-      # Required to authenticate users using GitHub OAuth
-      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
-      OAUTH_CALLBACK_URL: ${OAUTH_CALLBACK_URL}
+      DOCKER_SPAWN_CMD: start-singleuser.sh
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: continue
+        monitor: 60s
+        max_failure_ratio: 0.3
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
   data:
     external:
-      name: ${DATA_VOLUME_HOST}
+      name: jupyterhub-data
 
 networks:
   default:
-    external:
-      name: ${DOCKER_NETWORK_NAME}
+    external: 
+      name: jupyterhub-network

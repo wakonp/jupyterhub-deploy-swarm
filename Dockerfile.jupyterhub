@@ -3,9 +3,10 @@
 FROM jupyterhub/jupyterhub-onbuild:0.7.2
 
 # Install dockerspawner and its dependencies
+#    oauthenticator==0.5.* \
 RUN /opt/conda/bin/pip install \
-    oauthenticator==0.5.* \
-    dockerspawner==0.7.*
+    dockerspawner==0.7.* \
+	jupyterhub-ldapauthenticator
 
 # install docker on the jupyterhub container
 RUN wget https://get.docker.com -q -O /tmp/getdocker && \
