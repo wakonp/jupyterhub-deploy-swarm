@@ -6,7 +6,7 @@ include .env
 .DEFAULT_GOAL=build
 
 network:
-	@docker network inspect $(DOCKER_NETWORK_NAME) >/dev/null 2>&1 || docker network create $(DOCKER_NETWORK_NAME)
+	@docker network inspect $(DOCKER_NETWORK_NAME) >/dev/null 2>&1 || docker network  create --attachable -d overlay $(DOCKER_NETWORK_NAME)
 
 volumes:
 	@docker volume inspect $(DATA_VOLUME_HOST) >/dev/null 2>&1 || docker volume create --name $(DATA_VOLUME_HOST)
@@ -45,5 +45,6 @@ notebook_image: pull
 
 build: check-files network volumes
 	docker-compose build
+	docker push walki12/jupyterhub
 
 .PHONY: network volumes check-files pull notebook_image build

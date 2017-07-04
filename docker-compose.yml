@@ -9,7 +9,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.jupyterhub
-    image: jupyterhub
+    image: walki12/jupyterhub
     container_name: jupyterhub
     volumes:
       - type: bind
