@@ -22,15 +22,8 @@ services:
           nocopy: true
     ports:
       - "443:443"
-    environment:
-      # All containers will join this network
-      DOCKER_NETWORK_NAME: jupyterhub-network
-      # JupyterHub will spawn this Notebook image for users
-      DOCKER_NOTEBOOK_IMAGE: jupyter/scipy-notebook:bb222f49222e
-      # Notebook directory inside user image
-      DOCKER_NOTEBOOK_DIR: /home/jovyan/work
-      # Using this run command (optional)
-      DOCKER_SPAWN_CMD: start-singleuser.sh
+    env_file:
+      - .env
     deploy:
       mode: replicated
       replicas: 1

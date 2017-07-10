@@ -3,34 +3,42 @@
 
 # Configuration file for JupyterHub
 import os
+import subprocess
+import os
+import errno
+import stat
+
 c = get_config()
+pwd = os.path.dirname(__file__)
 
 # TLS config
 c.JupyterHub.ip = '0.0.0.0'
 c.JupyterHub.port = 443
-c.JupyterHub.proxy_api_ip = '0.0.0.0'
-c.JupyterHub.proxy_api_port = 8081
-c.DockerSpawner.hub_ip_connect = 'jupyterhub_jupyterhub'
 c.JupyterHub.hub_ip = '0.0.0.0'
-c.JupyterHub.hub_port = 8080
-c.DockerSpawner.container_ip = '0.0.0.0'
 
-c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
-c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
+c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
+c.JupyterHub.cleanup_servers = False
+c.SwarmSpawner.start_timeout = 60 * 10
+c.SwarmSpawner.jupyterhub_service_name = 'jupyterhub_jupyterhub'
+c.SwarmSpawner.service_prefix = "jupyterhub"
+c.SwarmSpawner.networks = ["jupyterhub-network"]
+notebook_dir = os.environ.get('NOTEBOOK_DIR') or '/home/jovyan/work'
+c.SwarmSpawner.notebook_dir = notebook_dir	
+c.SwarmSpawner.container_spec = {
+			'args' : ['start-singleuser.sh'],
+            'Image' :'jupyter/scipy-notebook:bb222f49222e',
+			'mounts' : [{'type' : 'volume',
+			'source' : 'jupyterhub-user-{username}',
+            'target' : '/home/jovyan/work'}]
+          }
 
-spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
-c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
-network_name = 'jupyterhub-network'
-c.DockerSpawner.use_internal_ip = True
-c.DockerSpawner.network_name = network_name
-c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
-notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
-c.DockerSpawner.notebook_dir = notebook_dir
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
-c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
-c.DockerSpawner.remove_containers = True
-c.DockerSpawner.debug = True
-
+c.SwarmSpawner.resource_spec = {}
+#c.SwarmSpawner.resource_spec = {
+#                'cpu_limit' : 1000, 
+#                'mem_limit' : int(512 * 1e6),
+#                'cpu_reservation' : 1000, 
+#                'mem_reservation' : int(512 * 1e6)
+#                }
 
 #SSL and Secret Config
 c.JupyterHub.ssl_key = os.environ['SSL_KEY']
@@ -55,7 +63,7 @@ c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
     'jupyterhub_cookie_secret')
 
 # Whitlelist users and admins
-#c.Authenticator.whitelist = whitelist = set()
+#c.Authenticator.whitelist = {'mal', 'zoe', 'inara', 'kaylee'}
 c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
 pwd = os.path.dirname(__file__)

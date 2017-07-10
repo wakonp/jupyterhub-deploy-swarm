@@ -41,10 +41,13 @@ check-files: userlist $(cert_files)
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)
 
+build_notebook_image:
+	docker build -t walki12/jupyternotebook -f Dockerfile.notebook .
+
 notebook_image: pull
 
 build: check-files network volumes
 	docker-compose build
 	docker push walki12/jupyterhub
 
-.PHONY: network volumes check-files pull notebook_image build
+.PHONY: network volumes check-files pull notebook_image build_notebook_image build

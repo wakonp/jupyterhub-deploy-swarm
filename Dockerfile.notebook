@@ -1,0 +1,25 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+FROM jupyter/scipy-notebook:bb222f49222e
+
+USER root
+RUN apt-get update
+RUN apt-get install -y libtinfo-dev libzmq3-dev libcairo2-dev libpango1.0-dev libmagic-dev libblas-dev liblapack-dev
+# Install stack from the FPComplete repositories.
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442 && \
+    echo 'deb http://download.fpcomplete.com/ubuntu trusty main' > /etc/apt/sources.list.d/fpco.list && \
+    apt-get update && \
+    apt-get install -y stack
+USER jovyan	
+
+RUN git clone http://www.github.com/gibiansky/IHaskell \
+    && cd IHaskell \
+    && git checkout 38ac12b5067fafc993ee501e123e484f079da2d2 -b working
+RUN pwd
+WORKDIR ./IHaskell
+RUN stack setup
+#RUN stack build --only-snapshot
+RUN pwd
+RUN stack build
+##USER root
+RUN stack install
