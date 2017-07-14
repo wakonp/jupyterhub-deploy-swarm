@@ -6,10 +6,10 @@ include .env
 .DEFAULT_GOAL=build
 
 network:
-	@docker network inspect $(DOCKER_NETWORK_NAME) >/dev/null 2>&1 || docker network  create --attachable -d overlay $(DOCKER_NETWORK_NAME)
+	@docker network inspect $(SWARMSPAWNER_NETWORK) >/dev/null 2>&1 || docker network  create --attachable -d overlay $(SWARMSPAWNER_NETWORK)
 
 volumes:
-	@docker volume inspect $(DATA_VOLUME_HOST) >/dev/null 2>&1 || docker volume create --name $(DATA_VOLUME_HOST)
+	@docker volume inspect $(JUPYTERHUB_DATA_VOLUME_HOST) >/dev/null 2>&1 || docker volume create --name $(JUPYTERHUB_DATA_VOLUME_HOST)
 
 self-signed-cert:
 	# make a self-signed cert
@@ -39,7 +39,7 @@ endif
 check-files: userlist $(cert_files)
 
 pull:
-	docker pull $(DOCKER_NOTEBOOK_IMAGE)
+	docker pull $(SWARMSPAWNER_NOTEBOOK_IMAGE)
 
 build_notebook_image:
 	docker build -t walki12/jupyternotebook -f Dockerfile.notebook .
@@ -50,4 +50,7 @@ build: check-files network volumes
 	docker-compose build
 	docker push walki12/jupyterhub
 
-.PHONY: network volumes check-files pull notebook_image build_notebook_image build
+push:
+	docker push walki12/jupyterhub
+
+.PHONY: network volumes check-files pull notebook_image build_notebook_image build push

@@ -38,6 +38,9 @@ services:
         failure_action: continue
         monitor: 60s
         max_failure_ratio: 0.3
+      placement:
+        constraints:
+          - node.role == manager
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 

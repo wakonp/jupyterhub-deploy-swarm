@@ -3,19 +3,24 @@
 FROM jupyterhub/jupyterhub-onbuild:0.7.2
 
 
-# Install dockerspawner and its dependencies
-#    oauthenticator==0.5.* \
-RUN /opt/conda/bin/pip install \
-    dockerspawner==0.7.* \
-	jupyterhub-ldapauthenticator
+#Install LDAP Authenticator
+#RUN /opt/conda/bin/pip install \
+#	jupyterhub-ldapauthenticator
+#RUN git clone https://github.com/jupyterhub/ldapauthenticator.git
+#WORKDIR ./ldapauthenticator
+#RUN python setup.py install
+#WORKDIR ..
+ADD ./ldapauthenticatorFHJ/ ldapauthenticator
+WORKDIR ./ldapauthenticator
+RUN python setup.py install
+WORKDIR ..
 
+#Install DockerSwarmSpawner
 RUN git clone https://github.com/cassinyio/SwarmSpawner
 WORKDIR ./SwarmSpawner
 RUN pip install -r requirements.txt
 RUN python setup.py install
 WORKDIR ..
-#For Higher Version
-
 
 # install docker on the jupyterhub container
 RUN wget https://get.docker.com -q -O /tmp/getdocker && \
@@ -31,6 +36,9 @@ RUN chmod 700 /srv/jupyterhub/secrets && \
     chmod 600 /srv/jupyterhub/secrets/*
 
 COPY ./userlist /srv/jupyterhub/userlist
+
+# docker-py causes an get_auth_header error
 RUN pip uninstall --yes docker docker-py ; pip install docker
+
 EXPOSE 8080
 EXPOSE 8081

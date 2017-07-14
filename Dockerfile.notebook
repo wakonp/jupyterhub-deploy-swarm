@@ -1,25 +1,36 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-FROM jupyter/scipy-notebook:bb222f49222e
+FROM jupyter/all-spark-notebook
 
 USER root
-RUN apt-get update
-RUN apt-get install -y libtinfo-dev libzmq3-dev libcairo2-dev libpango1.0-dev libmagic-dev libblas-dev liblapack-dev
-# Install stack from the FPComplete repositories.
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442 && \
-    echo 'deb http://download.fpcomplete.com/ubuntu trusty main' > /etc/apt/sources.list.d/fpco.list && \
-    apt-get update && \
-    apt-get install -y stack
-USER jovyan	
 
-RUN git clone http://www.github.com/gibiansky/IHaskell \
-    && cd IHaskell \
-    && git checkout 38ac12b5067fafc993ee501e123e484f079da2d2 -b working
-RUN pwd
-WORKDIR ./IHaskell
+RUN apt-get update && apt-get install -y \
+	python3-pip \
+	git \
+	libtinfo-dev \
+	libzmq3-dev \
+	libcairo2-dev \
+	libpango1.0-dev \
+	libmagic-dev \
+	libblas-dev \
+	liblapack-dev 
+	
+WORKDIR /Haskell
+RUN chown -R jovyan /Haskell
+USER jovyan
+RUN git clone https://github.com/gibiansky/IHaskell
+WORKDIR /Haskell/IHaskell
+RUN pip3 install -r requirements.txt
+USER root
+RUN curl -sSL https://get.haskellstack.org/ | sh
+USER jovyan
 RUN stack setup
-#RUN stack build --only-snapshot
-RUN pwd
-RUN stack build
-##USER root
-RUN stack install
+RUN stack install gtk2hs-buildtools
+RUN stack install --fast
+RUN stack exec ihaskell -- install --stack
+
+RUN pip install ipyparallel
+RUN jupyter nbextension install --sys-prefix --py ipyparallel
+RUN jupyter nbextension enable --sys-prefix --py ipyparallel
+RUN jupyter serverextension enable --sys-prefix --py ipyparallel
+ 
