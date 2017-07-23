@@ -29,8 +29,4 @@ RUN stack install gtk2hs-buildtools
 RUN stack install --fast
 RUN stack exec ihaskell -- install --stack
 
-RUN pip install ipyparallel
-RUN jupyter nbextension install --sys-prefix --py ipyparallel
-RUN jupyter nbextension enable --sys-prefix --py ipyparallel
-RUN jupyter serverextension enable --sys-prefix --py ipyparallel
- 
+WORKDIR /home/jovyan/work

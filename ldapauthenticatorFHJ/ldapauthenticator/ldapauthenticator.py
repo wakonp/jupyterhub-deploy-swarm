@@ -1,5 +1,6 @@
 import ldap3
 import re
+import os
 
 from jupyterhub.auth import Authenticator
 from tornado import gen
@@ -236,7 +237,10 @@ class LDAPAuthenticator(Authenticator):
                 self.log.warn('username:%s User not in any of the allowed groups', username)
                 return None
             else:
-                return username
+                newpath = os.environ.get('USER_ROOT_DIR') + username.lower()
+                if not os.path.exists(newpath):
+                    os.makedirs(newpath)
+                return username.lower()
         else:
             self.log.warn('Invalid password or username')
             return None

@@ -43,6 +43,8 @@ pull:
 
 build_notebook_image:
 	docker build -t walki12/jupyternotebook -f Dockerfile.notebook .
+	docker build -t walki12/studentnotebook -f Dockerfile.studentnotebook .
+	docker build -t walki12/teachernotebook -f Dockerfile.teachernotebook .
 
 notebook_image: pull
 

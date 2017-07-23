@@ -23,12 +23,34 @@ c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVIC
 c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
 c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
 c.SwarmSpawner.notebook_dir = os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')	
+mounts = [{'type' : 'volume',
+'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR'),
+'source' : 'jupyterhub-user-{username}',
+'no_copy' : True,
+'driver_config' : {
+  'name' : 'local',
+  'options' : {
+     'type' : 'nfs',
+	 'o' : 'addr=10.15.202.10,rw',
+	 'device' : ':/exports/jupyter/{username}'
+   }
+}},{
+'type' : 'volume',
+'target' : '/srv/nbgrader/exchange',
+'source' : 'jupyter-exchange-volume',
+'no_copy' : True,
+'driver_config' : {
+  'name' : 'local',
+  'options' : {
+     'type' : 'nfs',
+	 'o' : 'addr=10.15.202.10,rw',
+	 'device' : ':/exports/jupyterAssignments'
+   }
+}}]
 c.SwarmSpawner.container_spec = {
 			'args' : ['start-singleuser.sh'],
             'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
-			'mounts' : [{'type' : 'volume',
-			'source' : 'jupyterhub-user-{username}',
-            'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')}]
+			'mounts' : mounts
           }
 
 c.SwarmSpawner.resource_spec = {}
@@ -56,8 +78,7 @@ c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'Tr
 c.LDAPAuthenticator.bind_dn_template = ['CN={username},OU=AIM15,OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','CN={username},OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},ou=IMA,ou=Personal,ou=Benutzer,ou=Graz,ou=Technikum,dc=technikum,dc=fh-joanneum,dc=local','cn={username},OU=IMA16,OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local']
 #allowedGroups = os.environ.get('LDAPAUTHENTICATOR_ALLOWED_GROUPS').replace("'","").split(';') or ''
 #c.LDAPAuthenticator.allowed_groups = allowedGroups
-c.LDAPAuthenticator.valid_username_rege
-x = os.environ.get('LDAPAUTHENTICATOR_VALID_USERNAME_REGEX')
+#c.LDAPAuthenticator.valid_username_regex = os.environ.get('LDAPAUTHENTICATOR_VALID_USERNAME_REGEX')
 
 
 # Persist hub data on volume mounted inside container

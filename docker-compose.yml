@@ -16,7 +16,12 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
       - type: volume
-        source: data
+        source: nfs-user
+        target: /exports/jupyter
+        volume: 
+          nocopy: true
+      - type: volume
+        source: nfs
         target: /data
         volume: 
           nocopy: true
@@ -45,10 +50,18 @@ services:
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
-  data:
-    external:
-      name: jupyterhub-data
-
+  nfs:
+    driver: local
+    driver_opts: 
+      type: nfs
+      o: addr=10.15.202.10,rw
+      device: ":/exports/jupyterhub"
+  nfs-user:
+    driver: local
+    driver_opts: 
+      type: nfs
+      o: addr=10.15.202.10,rw
+      device: ":/exports/jupyter"
 networks:
   default:
     external: 
