@@ -1,0 +1,12 @@
+[submodule "ldapauthenticator"]
+	path = ldapauthenticator
+	url = https://github.com/wakonp/ldapauthenticator
+[submodule "SwarmSpawner"]
+	path = SwarmSpawner
+	url = https://github.com/wakonp/SwarmSpawner
+[submodule "docker-stacks"]
+	path = docker-stacks
+	url = https://github.com/wakonp/docker-stacks
+[submodule "dockerized_nfs_server"]
+	path = dockerized_nfs_server
+	url = https://github.com/wakonp/dockerized_nfs_server

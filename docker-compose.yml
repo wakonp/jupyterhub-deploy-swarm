@@ -16,12 +16,12 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
       - type: volume
-        source: nfs-user
-        target: /exports/jupyter
+        source: jupyteruser
+        target: /jupyterUsers
         volume: 
           nocopy: true
       - type: volume
-        source: nfs
+        source: jupyterhub
         target: /data
         volume: 
           nocopy: true
@@ -45,23 +45,17 @@ services:
         max_failure_ratio: 0.3
       placement:
         constraints:
-          - node.role == manager
+          - node.hostname == jupyterhub-main
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
-  nfs:
-    driver: local
-    driver_opts: 
-      type: nfs
-      o: addr=10.15.202.10,rw
-      device: ":/exports/jupyterhub"
-  nfs-user:
-    driver: local
-    driver_opts: 
-      type: nfs
-      o: addr=10.15.202.10,rw
-      device: ":/exports/jupyter"
+  jupyterhub:
+    external:
+      name: jupyterhub-data
+  jupyteruser:
+    external:
+      name: jupyterhub-userdata
 networks:
   default:
     external: 

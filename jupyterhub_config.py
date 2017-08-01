@@ -15,10 +15,10 @@ c.JupyterHub.ip = os.environ.get('JUPYTERHUB_IP')
 c.JupyterHub.port = int(os.environ.get('JUPYTERHUB_PORT'))
 c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
-c.JupyterHub.cleanup_servers = False
+#c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
-c.SwarmSpawner.start_timeout = 60 * 10
+c.SwarmSpawner.start_timeout = 60 * 60
 c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVICE_NAME')
 c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
 c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
@@ -30,9 +30,9 @@ mounts = [{'type' : 'volume',
 'driver_config' : {
   'name' : 'local',
   'options' : {
-     'type' : 'nfs',
-	 'o' : 'addr=10.15.202.10,rw',
-	 'device' : ':/exports/jupyter/{username}'
+     'type' : 'nfs4',
+	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+	 'device' : ':'+os.environ.get('NFSSERVER_USERDATA_DEVICE')
    }
 }},{
 'type' : 'volume',
@@ -42,11 +42,17 @@ mounts = [{'type' : 'volume',
 'driver_config' : {
   'name' : 'local',
   'options' : {
-     'type' : 'nfs',
-	 'o' : 'addr=10.15.202.10,rw',
-	 'device' : ':/exports/jupyterAssignments'
+     'type' : 'nfs4',
+	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+	 'device' : ':'+os.environ.get('NFSSERVER_ASSIGNMENTDATA_DEVICE')
    }
 }}]
+
+
+c.SwarmSpawner.teachers = [os.environ.get('SWARMSPAWNER_TEACHERS')]
+c.SwarmSpawner.teacher_image = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
+c.SwarmSpawner.student_image = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
+
 c.SwarmSpawner.container_spec = {
 			'args' : ['start-singleuser.sh'],
             'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
@@ -54,12 +60,6 @@ c.SwarmSpawner.container_spec = {
           }
 
 c.SwarmSpawner.resource_spec = {}
-#c.SwarmSpawner.resource_spec = {
-#                'cpu_limit' : 1000, 
-#                'mem_limit' : int(512 * 1e6),
-#                'cpu_reservation' : 1000, 
-#                'mem_reservation' : int(512 * 1e6)
-#                }
 
 #SSL and Secret Config
 c.JupyterHub.ssl_key = os.environ['SSL_KEY']
@@ -74,11 +74,8 @@ c.LDAPAuthenticator.lookup_dn = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == '
 c.LDAPAuthenticator.user_search_base = os.environ.get('LDAPAUTHENTICATOR_USER_SEARCH_BASE')
 c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTRIBUTE')
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
-#templateList = os.environ.get('LDAPAUTHENTICATOR_BIND_DN_TEMPLATE').replace(';',',').encode('utf-8')
 c.LDAPAuthenticator.bind_dn_template = ['CN={username},OU=AIM15,OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','CN={username},OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},ou=IMA,ou=Personal,ou=Benutzer,ou=Graz,ou=Technikum,dc=technikum,dc=fh-joanneum,dc=local','cn={username},OU=IMA16,OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local']
-#allowedGroups = os.environ.get('LDAPAUTHENTICATOR_ALLOWED_GROUPS').replace("'","").split(';') or ''
-#c.LDAPAuthenticator.allowed_groups = allowedGroups
-#c.LDAPAuthenticator.valid_username_regex = os.environ.get('LDAPAUTHENTICATOR_VALID_USERNAME_REGEX')
+
 
 
 # Persist hub data on volume mounted inside container

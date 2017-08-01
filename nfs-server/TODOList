@@ -1,5 +1,0 @@
-Install nfs-kernel-server via apt-get
-Add Lines in /etc/exports - > SHAREDFOLDERPATH *(rw,async,no_subtree_check,root_squash)
-Restart nfs server /etc/init.d/nfs-kernel-server restart
-Check with showmount -e
-DONE)

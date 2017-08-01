@@ -4,12 +4,6 @@ FROM jupyterhub/jupyterhub-onbuild:0.7.2
 
 
 #Install LDAP Authenticator
-#RUN /opt/conda/bin/pip install \
-#	jupyterhub-ldapauthenticator
-#RUN git clone https://github.com/jupyterhub/ldapauthenticator.git
-#WORKDIR ./ldapauthenticator
-#RUN python setup.py install
-#WORKDIR ..
 ADD ./ldapauthenticatorFHJ/ ldapauthenticator
 WORKDIR ./ldapauthenticator
 RUN python setup.py install

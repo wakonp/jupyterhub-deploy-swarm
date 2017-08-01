@@ -1,32 +1,33 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-FROM jupyter/all-spark-notebook
+FROM jupyter/base-notebook
 
 USER root
 
-RUN apt-get update && apt-get install -y \
-	python3-pip \
-	git \
-	libtinfo-dev \
-	libzmq3-dev \
-	libcairo2-dev \
-	libpango1.0-dev \
-	libmagic-dev \
-	libblas-dev \
-	liblapack-dev 
-	
-WORKDIR /Haskell
-RUN chown -R jovyan /Haskell
-USER jovyan
-RUN git clone https://github.com/gibiansky/IHaskell
-WORKDIR /Haskell/IHaskell
-RUN pip3 install -r requirements.txt
-USER root
-RUN curl -sSL https://get.haskellstack.org/ | sh
-USER jovyan
-RUN stack setup
-RUN stack install gtk2hs-buildtools
-RUN stack install --fast
-RUN stack exec ihaskell -- install --stack
-
-WORKDIR /home/jovyan/work
+#RUN apt-get update && apt-get install -y \
+#	git \
+#	pip3 \
+#	libtinfo-dev \
+#	libzmq3-dev \
+#	libcairo2-dev \
+#	libpango1.0-dev \
+#	libmagic-dev \
+#	libblas-dev \
+#	liblapack-dev 
+#	
+#WORKDIR /Haskell
+#RUN chown -R jovyan /Haskell
+#USER jovyan
+#RUN git clone https://github.com/gibiansky/IHaskell
+#WORKDIR /Haskell/IHaskell
+#RUN pip3 install -r requirements.txt
+#USER root
+#RUN curl -sSL https://get.haskellstack.org/ | sh
+#USER jovyan
+#RUN stack setup
+#RUN stack install gtk2hs-buildtools
+#RUN stack install --fast
+#RUN stack exec ihaskell -- install --stack
+#USER root
+#WORKDIR /home/jovyan/work
+#RUN echo "c.NotebookApp.port = 443" >> /etc/jupyter/jupyter_notebook_config.py
