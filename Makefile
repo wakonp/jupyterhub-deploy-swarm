@@ -75,9 +75,9 @@ check-files: userlist $(cert_files)
 
 #JUPYTERNOTEBOOKS
 jupyternotebook_build:
-	@docker build -t walki12/jupyternotebook -f Dockerfile.notebook .
-	@docker build -t walki12/studentnotebook -f Dockerfile.studentnotebook .
-	@docker build -t walki12/teachernotebook -f Dockerfile.teachernotebook .
+	@docker build -t walki12/jupyternotebook -f docker-stack/fhj-notebook/Dockerfile.notebook .
+	@docker build -t walki12/studentnotebook -f docker-stack/student-notebook/Dockerfile.studentnotebook .
+	@docker build -t walki12/teachernotebook -f docker-stack/teacher-notebook/Dockerfile.teachernotebook .
 jupyternotebook_push:
 	@docker push walki12/jupyternotebook >/dev/null && echo "JUPYTERNOTEBOOK IMAGE PUSH COMPLETE"
 	@docker push walki12/studentnotebook >/dev/null && echo "STUDENTNOTEBOOK IMAGE PUSH COMPLETE"
