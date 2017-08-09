@@ -8,7 +8,7 @@ services:
   jupyterhub:
     build:
       context: .
-      dockerfile: docker-stacks/jupyterhub/Dockerfile.jupyterhub
+      dockerfile: ./Dockerfile
     image: walki12/jupyterhub
     container_name: jupyterhub
     volumes:
