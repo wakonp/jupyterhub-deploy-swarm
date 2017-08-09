@@ -1,0 +1,1 @@
+find -type d -not -perm 775 -o -type f -not -perm 664 -not -perm 775 -printf %M/%u/%g/%p\n | less

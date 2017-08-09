@@ -1,0 +1,5 @@
+CN={username},OU=AIM15,OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local
+CN={username},OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local
+cn={username},ou=IMA,ou=Personal,ou=Benutzer,ou=Graz,ou=Technikum,dc=technikum,dc=fh-joanneum,dc=local
+cn={username},OU=IMA16,OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local
+cn={username},OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local

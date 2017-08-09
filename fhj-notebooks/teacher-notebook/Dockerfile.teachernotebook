@@ -1,0 +1,47 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+FROM jupyter/scipy-notebook
+
+USER $NB_USER
+
+#Install nbgrader
+RUN conda install nbgrader
+
+RUN jupyter nbextension install --user --py nbgrader
+RUN jupyter nbextension enable --user --py nbgrader
+RUN jupyter serverextension enable --user --py nbgrader
+
+USER root
+RUN apt-get update && apt-get install -y curl \
+	libtinfo-dev \
+	libzmq3-dev \
+	libcairo2-dev \
+	libpango1.0-dev \
+	libmagic-dev \
+	libblas-dev \
+	liblapack-dev && \
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 575159689BEFB442 && \
+    echo 'deb http://download.fpcomplete.com/ubuntu trusty main' > /etc/apt/sources.list.d/fpco.list && \
+	curl -sSL https://get.haskellstack.org/ | sh && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+	
+ENV PATH="/home/$NB_USER/.local/bin:${PATH}"
+	
+USER $NB_USER
+#JavaScript Installation
+RUN git clone https://github.com/notablemind/jupyter-nodejs.git && cd jupyter-nodejs && \
+	umask 0002 && mkdir -p ~/.ipython/kernels/nodejs/ && \
+	npm install && node install.js && \
+	npm run build && npm run build-ext
+
+#Haskell Installation		
+RUN git clone https://github.com/gibiansky/IHaskell && cd IHaskell && \
+	umask 0002 && pip3 install -r requirements.txt && stack setup && \
+	stack install gtk2hs-buildtools && \
+	stack install --fast && \
+	stack exec ihaskell -- install --stack
+	
+USER root
+
+COPY start.sh /usr/local/bin

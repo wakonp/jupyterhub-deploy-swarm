@@ -66,7 +66,6 @@ c.JupyterHub.ssl_key = os.environ['SSL_KEY']
 c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with LDAP
-c.LocalAuthenticator.create_system_users = True
 c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
 c.LDAPAuthenticator.server_address = os.environ.get('LDAPAUTHENTICATOR_SERVER_ADDRESS')
 c.LDAPAuthenticator.server_port = int(os.environ.get('LDAPAUTHENTICATOR_SERVER_PORT'))
@@ -74,9 +73,21 @@ c.LDAPAuthenticator.lookup_dn = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == '
 c.LDAPAuthenticator.user_search_base = os.environ.get('LDAPAUTHENTICATOR_USER_SEARCH_BASE')
 c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTRIBUTE')
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
-c.LDAPAuthenticator.bind_dn_template = ['CN={username},OU=AIM15,OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','CN={username},OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},ou=IMA,ou=Personal,ou=Benutzer,ou=Graz,ou=Technikum,dc=technikum,dc=fh-joanneum,dc=local','cn={username},OU=IMA16,OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local','cn={username},OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local']
+c.LDAPAuthenticator.allowed_groups = allowedgroups = []
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
+    for line in f:
+        if not line:
+            continue
+        allowedgroups.append(line)
 
-
+c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'bindDnTemplate')) as f:
+    for line in f:
+        if not line:
+            continue
+        bindDnTemplate.append(line)
 
 # Persist hub data on volume mounted inside container
 data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
