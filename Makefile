@@ -52,7 +52,7 @@ jupyternotebook_notify:
 	@echo "Docker Images wurden erfolgreich erstellt und auf allen Nodes gepullt!" | mail -s "Jupyterhub@FH" philipp.wakonigg@edu.fh-joanneum.at
 #NFSSERVER
 nfs_start:
-	@docker run -p 2049:2049 -v $(NFSSERVER_VOLUME):/exports -d --name jupyterhub_nfs --cap-add=SYS_ADMIN erezhorev/dockerized_nfs_server jupyterhub jupyterUsers jupyterAssignments
+	@docker run -p 2049:2049 -v $(NFSSERVER_VOLUME):/exports -d --name jupyterhub_nfs --cap-add=SYS_ADMIN --env-file=.envNFS walki12/nfs-server jupyterhub jupyterUsers jupyterAssignments
 	@sleep 5
 	@echo "NFS Server started"
 nfs_config:
