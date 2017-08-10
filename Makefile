@@ -58,6 +58,7 @@ nfs_start:
 nfs_config:
 	@docker exec -d jupyterhub_nfs groupadd students && echo "Group 'students' added!"
 	@docker exec -d jupyterhub_nfs groupadd teachers && echo "Group 'teachers' added!"
+	@docker exec -d jupyterhub_nfs useradd -s /bin/bash -N nfs
 	#TODO MAKE SHARE PERMISSION STRUCTURE
 nfs_stop:
 	@docker stop jupyterhub_nfs 2>/dev/null || true

@@ -9,7 +9,8 @@ if [ $(id -u) == 0 ] ; then
     # Change UID of NB_USER to NB_UID if it does not match
     if [ "$NB_UID" != $(id -u $NB_USER) ] ; then
         echo "Set user UID to: $NB_UID"
-        usermod -u $NB_UID $NB_USER
+        usermod -u $NB_UID -l $JPY_USER $NB_USER
+        NB_USER=$JPY_USER
         # Careful: $HOME might resolve to /root depending on how the
         # container is started. Use the $NB_USER home path explicitly.
         #for d in "$CONDA_DIR" "$JULIA_PKGDIR" "/home/$NB_USER"; do
@@ -24,7 +25,6 @@ if [ $(id -u) == 0 ] ; then
     if [ "$NB_GID" ] ; then
         echo "Change GID to $NB_GID"
         groupmod -g $NB_GID -o $(id -g -n $NB_USER)
-		id
     fi
 
     # Enable sudo if requested
