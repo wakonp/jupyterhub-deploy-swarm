@@ -1,57 +1,75 @@
-# jupyterhub-fhjoanneum
-A DockerSwarm Jupyterhub setup, which uses a NFS Server for persistent storage
-This repository is based on the jupyterhub-deploy-docker repo but is modified to use the LDAPAuthenticator and DockerSwarmSpawner.
-Unfortunaly the DockerSpawner does not support the DockerSwarm Service concept and could not be used in this setup. The 
-DockerSwarmSpawner was used for this compatibility and tested on 3 Nodes (2 Manager 1 Worker). The LDAPAuthenticator was 
-configured as descripted in its repo to communicate with the FH-Joanneum LDAP System.
+# jupyterhub-deploy-swarm
+This repository represents my parctical research project for my master thesis. I used the jupyterhub-deploy-docker as the base for this repository. The main difference between them is, that this jupyterhub-fhjoanneum is using SwarmSpawner, whereas the jupyterhub-deploy-docker is using the DockerSpawner to generate notebook servers in a docker environment. The DockerSpawner is able to deploy containers only. That means DockerSpawner does not support the service concept of Docker which comes with version [1.12.0](https://docs.docker.com/engine/swarm/), which is the reason why this projects uses [SwarmSpawner](https://github.com/cassinyio/SwarmSpawner).
 
-Furthermore, I used the dockerized_nfs_server repository to run a nfs-container on the main swarm node and publish the tcp
-port through out the host. At this point it was possible to create new Docker volumes with the type nfs4 which pointed at 
-the nfs-container.
+Also please checkout the [wiki](https://github.com/wakonp/jupyterhub-fhjoanneum/wiki) for more information.
 
-In the configuration for the NotebookServerContainer (jupyterhub-config.py - container_spec), I added two volumes from type 
-nfs4 (therefore I had to add a few lines of code to the SwarmSpawner). The first one stores all Notebookdata and the second one 
-will be needed for nbgrader (not yet tested). 
+Many thanks to all contributers who made this possible.
 
-Before starting up the jupyterhub-service, an overlay network (jupyterhub-network) and named nfs volume are created. The network
-and the named-volumes are configured to be used by the jupyterhub-service in the docker-compose file.
+Docu will be updated over time!
 
-Starting the jupyterhub-service with 'docker stack deploy -c docker-compose.yml jupyterhub' creates the service. At this 
-point the nfs-container on the main host need to be up and running, because jupyterhub stores data (cookie-secrete, database,...)
-in this volume. Increases the startup speed the following times enormes.
+## Overview
+![Application Overview](https://github.com/wakonp/jupyterhub-fhjoanneum/blob/master/docu/overview.jpeg)
+## Authenticator
+This project is using the [LDAPAuthenticator]() for jupyterhub.
+## Spawner
+As mentioned before, the project is using the [SwarmSpawner](https://github.com/cassinyio/SwarmSpawner) as the jupyterhub spawner class, which is able to create Docker services in a Docker swarm setup. It is necessary to provide a working Docker Swarm environment to run this jupyterhub-deploy-swarm example.
+## nbgrader
+Nbgrader is also installed on each spawned notebook server. While spawning the servers, the spawner can distinguish between a teacher or a student and uses different images for each type of group. The difference between these images is, that teacher can create and assign Assignments, whereas the students can attempt and submit them back to the teacher. 
+## Persistant Storage
+The basic approach to store data via Docker is to use Docker Volumes. The only problem with this solution is, that the volumes are only available on the host, which created the volume. There is no way to share the volumes in the Docker Swarm yet. That's the reason why the project uses Docker NFS Volumes. 
 
-Now the juypterhub-service should be up and running (if you configured it right :D) and you can access the hub on the https 
-port of the main node. There you can perform the login. If you enter the correct username/password, the LDAPAuthenticator 
-returns the username to the DockerSpawner. The DockerSpawner then uses the configured container_spec (image,network,..) to 
-start a new notebook-service.
+A single NFS-Server get started in a container on the main host. Every other host is able to communicate with this NFS-Container and therefore can create the Docker NFS Volumes. 
 
-Here comes the cool part. If the User authenticates correct, the username of the LDAPAuthenticator is used to create a new 
-User in the nfs-server container (adding it to a group students-teachers needs to be added). After this interception of the
-Jupyterhub Spawn Process, the DockerSwarmSpawner gets the UID as well as the GID from the previous created user in the 
-nfs-container. These two values are put into the enviroment of the not-yet-started NotebookServerService. I had to modify 
-the notebook images for providing multiple kernels and for running the whole server with User "root". But dont worry the 
-'start.sh' script of any jupyter/base-notebook based DockerNotebookImage checks if the current User is root and does something
-amazing. It uses the UID and GID of the environment and changes the UID & GID of the jovyan User (default User) and changes 
-the permissions for directories which needed to be accecable while run-time (chown UID:GID -R /opt/conda, /home/jovyan). 
-This is pretty amazing, but if you use multiple kernels (my setup - all-spark-notebook +Haskell - 10Gb DockerImage :D), 
-this command takes AGGGEESSSS. 
+## Usage
+The whole project is using the `Makefile` to perform actions, like creating a new Docker Volume or building a Docker Image. Here comes a detailed list of how to use the `Makefile`:
 
-Solution(not tested): In the base-notebook-image before creating this jovyan user, I created a nbbuild group and assign it 
-while creating the jovyan user. I also need to modify the umask of the user, so the buildgroup gets fullaccess(rwx) on all
-files jovyan creates while building the dependencies of the notebook. Coming back to the start script, the UID and GID will 
-be modifiy, but the nbbuild group will be added as a secondary group (or stay as primary, me dont know yet).
+`make <command>`
 
-Summing up, the Notebook User needs full access to all dependencies for running the NotebookServer, but also need to write 
-on the nfs-server with a specific UID and GID. Therefore, the nfs-server UID:GID will be injected via environment variables 
-into the Service. The service will be started as USER root to trigger the change UID:GID steps in the start.sh. There the 
-UID of the jovyan user gets changed to the UID of the nfs-user. The GID of the nfs-user will be added as a secondary || primary
-group of jovyan. At this point jovyan should have the UID of the nfs-user and two groups (nbbuild and GID of the nfs-group). 
-Through the nbbuild group jovyan should still have full access on all prebuild dependencies.
+Please make sure to clone this repository on the main node of a Docker Swarm. Then modify the `jupyterhub_config.py` and execute `make run` to start everything. This will trigger the `docker pull` command, which will load the `walki12/jupyterhub` Docker Image from Dockerhub, create a new `overlay` network for the application, the Docker Volumes for persistant storage and start the NFS-Container and the jupyterhub service.
 
-If this concept works, notebook users will alwas write with their nfs-user and can be managed on the nfs-system seperatly. 
+### Maintasks Commands
+These commands are used to control the whole project (NFS, jupyterhub).
+- run
+  - removes all running docker instancies (network/volumes/container/service) and creates and starts them again.
+- start
+  - starts the NFS container and the jupyterhub service. (Volumes and Network must be available) 
+- stop
+  - stops the NFS container and removes the jupyterhub service. (Volumes and Network are still availabe)
+- remove
+  - removes all running docker instancies (network/volumes/container/service)
+- restart
+  - runs `stop` and `start`.
+- rerun
+  - runs `remove` and `run`
+- rebuild
+  - runs `remove`, `jupyterhub_build`, `jupyterhub_push`, `jupyterhub_updatenodes` and `run`
+  - it builds the jupyterhub Docker Image again and restarts the application with the new image.
 
-Long Story short, if you like to test this repo, just check it out and make sure you check out the submodules too and run make run
+### NFS tasks Commands
+NFS specific commands, which will only effect the NFS Container and/or the underlaying volumes.
+- nfs_run
+  - calls `nfs_remove`, `nfs_start` and `nfs_config`
+- nfs_config
+  - connects into the NFS Container and executes commands (create group/user)
+- nfs_start
+  - starts the NFS Container like `docker start <nfs-container-name>` (Container must be available (stopped))
+- nfs_stop
+  - stops the NFS Container.
+- nfs_remove
+  - removes the NFS Container and the Docker NFS Container Volumes
+- nfs_restart
+  - runs `nfs_stop` and `nfs_start` (careful `nfs_config` did not get called)
 
-Many thanks to all contributers how made this possible.
-
-I will update this docu, when all steps are tested and working :D
+### Jupyterhub tasks Commands
+Jupyterhub specific commands, which will only effect the Jupyterhub Service and/or the underlaying volumes.
+- jupyterhub_run
+  - calls `jupyterhub_remove`, creates the volume and calls `jupyterhub_start`
+- jupyterhub_start
+  - starts the jupyterhub Service (Volumes/Network must be available)
+- jupyterhub_remove
+  - removes the jupyterhub service and the Docker Volumes of the service 
+- jupyterhub_restart
+- jupyterhub_build
+  - builds a jupyterhub Docker Image
+- jupyterhub_push
+  - pushes the Docker Image of jupyterhub to Docker Hub
