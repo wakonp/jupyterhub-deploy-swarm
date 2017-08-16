@@ -1,0 +1,16 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#JUPYTERHUB VOLUMES
+volumes_nfs_create:
+	@(docker volume inspect $(NFSSERVER_VOLUME) >/dev/null 2>&1 && echo "NFS VOLUME ALREADY THERE!") || (docker volume create $(NFSSERVER_VOLUME) && echo "NFS VOLUME CREATED!")
+volumes_nfs_delete:
+	@(docker volume rm $(NFSSERVER_VOLUME) >/dev/null 2>&1 &&  echo "NFS VOLUME REMOVED!") || echo "NFS VOLUME NOT PRESENT!"
+volumes_nfs_recreate: volumes_nfs_delete volumes_nfs_create
+volumes_jupyterhub_create:
+	@(docker volume inspect $(NFSSERVER_HUBDATA_VOLUMENAME) >/dev/null 2>&1 &&  echo "HUBDATA VOLUME ALREADY THERE!")  ||  (docker volume create --driver local --opt type=nfs4 --opt o=addr=$(NFSSERVER_IP),rw --opt device=:$(NFSSERVER_HUBDATA_SHARE) $(NFSSERVER_HUBDATA_VOLUMENAME) && echo "JUPYTERDATA VOLUMES CREATED!")
+	@(docker volume inspect $(NFSSERVER_USERDATA_VOLUMENAME) >/dev/null 2>&1 && echo "USERDATA VOLUME ALREADY THERE!") ||  (docker volume create --driver local --opt type=nfs4 --opt o=addr=$(NFSSERVER_IP),rw --opt device=:$(NFSSERVER_USERDATA_SHARE) $(NFSSERVER_USERDATA_VOLUMENAME) && echo "USERDATA VOLUMES CREATED!")
+volumes_jupyterhub_delete:
+	@(docker volume rm $(NFSSERVER_HUBDATA_VOLUMENAME) >/dev/null 2>&1 && echo "HUBDATA VOLUME REMOVED" ) || echo "THERE IS NO HUBDATA VOLUME!"
+	@(docker volume rm $(NFSSERVER_USERDATA_VOLUMENAME) >/dev/null 2>&1 echo "USERDATA VOLUME REMOVED" ) || echo "THERE IS NO USERDATA VOLUME!"
+volumes_jupyterhub_recreate: volumes_jupyterhub_delete volumes_jupyterhub_create

@@ -1,0 +1,18 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#NGINX Proxy
+nginx_start:
+	docker run -p 443:443 -d \
+	--name jupyterhub_nginx \
+	-v $(shell pwd)/nginx/nginx.conf:/etc/nginx/nginx.conf:ro \
+	-v $(shell pwd)/nginx/certificate.crt:/etc/nginx/ssl/nginx.crt \
+	-v $(shell pwd)/nginx/privateKey.key:/etc/nginx/ssl/nginx.key \
+	--network=$(JUPYTERHUB_NETWORK) \
+	nginx 
+	@echo "NGINX Container started"
+nginx_stop:
+	@docker stop jupyterhub_nginx 2>/dev/null || true
+nginx_remove: nginx_stop
+	@docker rm -v jupyterhub_nginx 2>/dev/null || true
+nginx_run: nginx_remove nginx_start

@@ -1,2 +1,2 @@
-NFS_CONFIG_TEMPLATE=(rw,async,no_subtree_check,no_root_squash)
+NFS_CONFIG_TEMPLATE=(rw,async,no_subtree_check)
 NFS_CONFIG_HOSTS=10.15.202.10,10.15.200.217,10.15.200.222

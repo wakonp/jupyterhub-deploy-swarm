@@ -14,6 +14,9 @@ pwd = os.path.dirname(__file__)
 c.JupyterHub.ip = os.environ.get('JUPYTERHUB_IP')
 c.JupyterHub.port = int(os.environ.get('JUPYTERHUB_PORT'))
 c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
+c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
+c.JupyterHub.proxy_api_ip = os.environ.get('JUPYTERHUB_API_IP')
+c.JupyterHub.proxy_api_port =  int(os.environ.get('JUPYTERHUB_API_PORT'))
 c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
 #c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
@@ -62,8 +65,8 @@ c.SwarmSpawner.container_spec = {
 c.SwarmSpawner.resource_spec = {}
 
 #SSL and Secret Config
-c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
+#c.JupyterHub.ssl_key = os.environ['SSL_KEY']
+#c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with LDAP
 c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'

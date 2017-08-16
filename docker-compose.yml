@@ -9,7 +9,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: walki12/jupyterhub
+    image: walki12/jupyterhub:latest
     container_name: jupyterhub
     volumes:
       - type: bind
@@ -25,8 +25,6 @@ services:
         target: /data
         volume: 
           nocopy: true
-    ports:
-      - "443:443"
     env_file:
       - .env
     deploy:
@@ -47,7 +45,7 @@ services:
         constraints:
           - node.hostname == jupyterhub-main
     command: >
-      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+      start.sh
 
 volumes:
   jupyterhub:

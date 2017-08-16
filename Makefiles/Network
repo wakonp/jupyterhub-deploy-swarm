@@ -1,0 +1,12 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#JUPYTERHUB NETWORK
+network_create:
+	@(docker network inspect $(SWARMSPAWNER_NETWORK) >/dev/null 2>&1 && echo "NETWORK IS ALREADY PRESENT") || (docker network  create --attachable -d overlay $(SWARMSPAWNER_NETWORK) >/dev/null && echo "NETWORK CREATED!")
+
+network_remove:
+	@(docker network rm $(SWARMSPAWNER_NETWORK) >/dev/null 2>&1 && echo "NETWORK REMOVED!") || echo "NETWORK WAS NOT PRESENT!"
+
+network_recreate: network_remove network_create
+

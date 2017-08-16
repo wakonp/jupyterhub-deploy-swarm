@@ -1,0 +1,17 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#JUPYTERNOTEBOOKS
+jupyternotebook_build:
+	@docker build -t $(TEACHER_IMAGE) -f ./fhj-notebooks/teacher-notebook/Dockerfile.teachernotebook ./fhj-notebooks/teacher-notebook/
+	@docker build -t $(STUDENT_IMAGE) -f ./fhj-notebooks/student-notebook/Dockerfile.studentnotebook ./fhj-notebooks/student-notebook/
+jupyternotebook_push:
+	@docker push $(STUDENT_IMAGE)
+	@docker push $(TEACHER_IMAGE)
+jupyternotebook_updatenodes: node1-updateDocker node2-updateDocker
+jupyternotebook_notify:
+	@echo "Docker Images built successfully!" | mail -s "Jupyterhub" $(EMAIL)
+
+jupyternotebook: jupyternotebook_build jupyternotebook_push jupyternotebook_notify
+jupyternotebook-hidden-notify:
+	@nohup make jupyternotebook >.makelog 2>&1 || tail .makelog | mail -s "JupyterHub" $(EMAIL) &

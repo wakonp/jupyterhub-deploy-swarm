@@ -1,0 +1,21 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#NFSSERVER
+nfs_start:
+	@docker run -p $(NFS_PORT):2049 -v $(NFSSERVER_VOLUME):/exports -d --name $(NFS_CONTAINER_NAME) --cap-add=SYS_ADMIN --env-file=$(NFS_ENV_FILE) $(NFS_IMAGE) $(NFS_SHARES)
+	@sleep 5
+	@echo "NFS Server started"
+nfs_config:
+	@docker exec -d jupyterhub_nfs groupadd students && echo "Group 'students' added!"
+	@docker exec -d jupyterhub_nfs groupadd teachers && echo "Group 'teachers' added!"
+	@docker exec -d jupyterhub_nfs useradd -s /bin/bash -N hubUser
+nfs_stop:
+	@docker stop jupyterhub_nfs 2>/dev/null || true
+nfs_remove: nfs_stop
+	@docker rm jupyterhub_nfs 2>/dev/null || true
+nfs_restart: nfs_stop nfs_start
+nfs_run: nfs_remove volumes_nfs_recreate nfs_start nfs_config
+nfs_testuser:
+	docker exec $(NFS_CONTAINER_NAME) useradd -d /exports/jupyterUsers/test -s /bin/bash -N -g students test
+	docker exec -it $(NFS_CONTAINER_NAME) cat /etc/passwd

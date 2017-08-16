@@ -1,0 +1,15 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#JUPYTERHUB 
+jupyterhub_build:
+	@docker-compose build
+jupyterhub_push:
+	@docker push $(JUPYTERHUB_IMAGE)
+jupyterhub_start:
+	@docker stack deploy -c docker-compose.yml  $(JUPYTERHUB_SERVICE_PREFIX) >/dev/null 2>&1 && echo "JUPYTERHUB STARTED!"
+jupyterhub_remove:
+	-docker service rm $(JUPYTERHUB_SERVICE_PREFIX)_$(JUPYTERHUB_SERVICE_NAME)
+	@sleep 5
+jupyterhub_restart: jupyterhub_remove jupyterhub_start
+jupyterhub_run: jupyterhub_remove volumes_jupyterhub_recreate jupyterhub_start
