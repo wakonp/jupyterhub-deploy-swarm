@@ -16,48 +16,43 @@ services:
         source: ./jupyterhub_config.py
         target: /srv/jupyterhub/jupyterhub_config.py
       - type: bind
+        source: ./hubConfig/allowedLDAPGroups
+        target: /srv/jupyterhub/allowedLDAPGroups
+      - type: bind
+        source: ./hubConfig/bindDnTemplate
+        target: /srv/jupyterhub/bindDnTemplate
+      - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
-      # - type: volume
-      #   source: jupyteruser
-      #   target: /jupyterUsers
-      #   volume:
-      #     nocopy: true
-      # - type: volume
-      #   source: jupyterhub
-      #   target: /data
-      #   volume:
-      #     nocopy: true
+      - type: volume
+        source: jupyteruser
+        target: /jupyterUsers
+        volume:
+          nocopy: true
+      - type: volume
+        source: jupyterhub
+        target: /data
+        volume:
+          nocopy: true
     env_file:
       - .env
     deploy:
       mode: replicated
       replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: continue
-        monitor: 60s
-        max_failure_ratio: 0.3
       placement:
         constraints:
           - node.hostname == jupyterhub-main
-    command: >
-      start.sh
+    # command: >
+    #   start.sh
 
-# volumes:
-#   jupyterhub:
-#     external:
-#       name: jupyterhub-data
-#   jupyteruser:
-#     external:
-#       name: jupyterhub-userdata
-# networks:
-#   default:
-#     external:
-#       name: jupyterhub-network
+volumes:
+  jupyterhub:
+    external:
+      name: jupyterhub-data
+  jupyteruser:
+    external:
+      name: jupyterhub-userdata
+networks:
+  default:
+    external:
+      name: jupyterhub-network

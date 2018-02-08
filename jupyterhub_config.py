@@ -17,52 +17,52 @@ c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
 c.JupyterHub.proxy_api_ip = os.environ.get('JUPYTERHUB_API_IP')
 c.JupyterHub.proxy_api_port =  int(os.environ.get('JUPYTERHUB_API_PORT'))
-#c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
-#c.JupyterHub.cleanup_servers = False
+c.JupyterHub.spawner_class = 'wakonp.SwarmSpawner'
+c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
-# c.SwarmSpawner.start_timeout = 60 * 60
-# c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVICE_NAME')
-# c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
-# c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
-# c.SwarmSpawner.notebook_dir = os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')
-# mounts = [{'type' : 'volume',
-# 'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR'),
-# 'source' : 'jupyterhub-user-{username}',
-# 'no_copy' : True,
-# 'driver_config' : {
-#   'name' : 'local',
-#   'options' : {
-#      'type' : 'nfs4',
-# 	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
-# 	 'device' : ':'+os.environ.get('NFSSERVER_USERDATA_DEVICE')
-#    }
-# }},{
-# 'type' : 'volume',
-# 'target' : '/srv/nbgrader/exchange',
-# 'source' : 'jupyter-exchange-volume',
-# 'no_copy' : True,
-# 'driver_config' : {
-#   'name' : 'local',
-#   'options' : {
-#      'type' : 'nfs4',
-# 	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
-# 	 'device' : ':'+os.environ.get('NFSSERVER_ASSIGNMENTDATA_DEVICE')
-#    }
-# }}]
-#
-#
+c.SwarmSpawner.start_timeout = 60 * 60
+c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVICE_NAME')
+c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
+c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
+c.SwarmSpawner.notebook_dir = os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')
+mounts = [{'type' : 'volume',
+'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR'),
+'source' : 'jupyterhub-user-{username}',
+'no_copy' : True,
+'driver_config' : {
+  'name' : 'local',
+  'options' : {
+     'type' : 'nfs4',
+	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+	 'device' : ':'+os.environ.get('NFSSERVER_USERDATA_DEVICE')
+   }
+}},{
+'type' : 'volume',
+'target' : '/srv/nbgrader/exchange',
+'source' : 'jupyter-exchange-volume',
+'no_copy' : True,
+'driver_config' : {
+  'name' : 'local',
+  'options' : {
+     'type' : 'nfs4',
+	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+	 'device' : ':'+os.environ.get('NFSSERVER_ASSIGNMENTDATA_DEVICE')
+   }
+}}]
+
 # c.SwarmSpawner.teachers = [os.environ.get('SWARMSPAWNER_TEACHERS')]
 # c.SwarmSpawner.teacher_image = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
 # c.SwarmSpawner.student_image = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
-#
-# c.SwarmSpawner.container_spec = {
-# 			'args' : ['start-singleuser.sh'],
-#             'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
-# 			'mounts' : mounts
-#           }
-#
-# c.SwarmSpawner.resource_spec = {}
+
+
+c.SwarmSpawner.container_spec = {
+			'args' : ['start-singleuser.sh'],
+            'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
+			'mounts' : mounts
+          }
+
+c.SwarmSpawner.resource_spec = {}
 
 #SSL and Secret Config
 #c.JupyterHub.ssl_key = os.environ['SSL_KEY']
@@ -76,21 +76,24 @@ c.LDAPAuthenticator.lookup_dn = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == '
 c.LDAPAuthenticator.user_search_base = os.environ.get('LDAPAUTHENTICATOR_USER_SEARCH_BASE')
 c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTRIBUTE')
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
-c.LDAPAuthenticator.allowed_groups = allowedgroups = []
-#pwd = os.path.dirname(__file__)
-#with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
-#    for line in f:
-#        if not line:
-#            continue
-#        allowedgroups.append(line)
 
-#c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
-#pwd = os.path.dirname(__file__)
-#with open(os.path.join(pwd, 'bindDnTemplate')) as f:
-#    for line in f:
-#        if not line:
-#            continue
-#        bindDnTemplate.append(line)
+#GET allowedgroups and bindDnTemplate config from files
+c.LDAPAuthenticator.allowed_groups = allowedgroups = []
+
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
+   for line in f:
+       if not line:
+           continue
+       allowedgroups.append(line)
+
+c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'bindDnTemplate')) as f:
+   for line in f:
+       if not line:
+           continue
+       bindDnTemplate.append(line)
 
 # Persist hub data on volume mounted inside container
 #data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
