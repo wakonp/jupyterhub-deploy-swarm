@@ -78,22 +78,23 @@ c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTR
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
 
 #GET allowedgroups and bindDnTemplate config from files
-c.LDAPAuthenticator.allowed_groups = allowedgroups = []
-
+allowedgroups = []
 pwd = os.path.dirname(__file__)
 with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
    for line in f:
        if not line:
            continue
        allowedgroups.append(line)
+c.LDAPAuthenticator.allowed_groups = allowedgroups
 
-c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
+bindDnTemplate = []
 pwd = os.path.dirname(__file__)
 with open(os.path.join(pwd, 'bindDnTemplate')) as f:
    for line in f:
        if not line:
            continue
        bindDnTemplate.append(line)
+c.LDAPAuthenticator.bind_dn_template = str(bindDnTemplate)
 
 # Persist hub data on volume mounted inside container
 #data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
