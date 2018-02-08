@@ -15,8 +15,6 @@ c.JupyterHub.ip = os.environ.get('JUPYTERHUB_IP')
 c.JupyterHub.port = int(os.environ.get('JUPYTERHUB_PORT'))
 c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
-c.JupyterHub.proxy_api_ip = os.environ.get('JUPYTERHUB_API_IP')
-c.JupyterHub.proxy_api_port =  int(os.environ.get('JUPYTERHUB_API_PORT'))
 c.JupyterHub.spawner_class = 'wakonpspawner.SwarmSpawner'
 c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
@@ -101,15 +99,11 @@ c.LDAPAuthenticator.bind_dn_template = str(bindDnTemplate)
 #c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
 #c.JupyterHub.cookie_secret_file = os.path.join(data_dir,'jupyterhub_cookie_secret')
 
-# Whitlelist users and admins
-# c.Authenticator.admin_users = admin = set()
-# c.JupyterHub.admin_access = True
-# pwd = os.path.dirname(__file__)
-# with open(os.path.join(pwd, 'userlist')) as f:
-#     for line in f:
-#         if not line:
-#             continue
-#         parts = line.split()
-#         name = parts[0]
-#         if len(parts) > 1 and parts[1] == 'admin':
-#             admin.add(name)
+# Whitlelist admins
+c.Authenticator.admin_users = admin = set()
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'adminusers')) as f:
+    for line in f:
+        if not line:
+            continue
+        admin.add(line)

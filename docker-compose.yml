@@ -12,6 +12,9 @@ services:
         source: ./jupyterhub_config.py
         target: /srv/jupyterhub/jupyterhub_config.py
       - type: bind
+        source: ./hubConfig/adminusers
+        target: /srv/jupyterhub/adminusers
+      - type: bind
         source: ./hubConfig/allowedLDAPGroups
         target: /srv/jupyterhub/allowedLDAPGroups
       - type: bind
