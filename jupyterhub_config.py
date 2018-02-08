@@ -21,48 +21,48 @@ c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
 #c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
-c.SwarmSpawner.start_timeout = 60 * 60
-c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVICE_NAME')
-c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
-c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
-c.SwarmSpawner.notebook_dir = os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')	
-mounts = [{'type' : 'volume',
-'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR'),
-'source' : 'jupyterhub-user-{username}',
-'no_copy' : True,
-'driver_config' : {
-  'name' : 'local',
-  'options' : {
-     'type' : 'nfs4',
-	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
-	 'device' : ':'+os.environ.get('NFSSERVER_USERDATA_DEVICE')
-   }
-}},{
-'type' : 'volume',
-'target' : '/srv/nbgrader/exchange',
-'source' : 'jupyter-exchange-volume',
-'no_copy' : True,
-'driver_config' : {
-  'name' : 'local',
-  'options' : {
-     'type' : 'nfs4',
-	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
-	 'device' : ':'+os.environ.get('NFSSERVER_ASSIGNMENTDATA_DEVICE')
-   }
-}}]
-
-
-c.SwarmSpawner.teachers = [os.environ.get('SWARMSPAWNER_TEACHERS')]
-c.SwarmSpawner.teacher_image = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
-c.SwarmSpawner.student_image = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
-
-c.SwarmSpawner.container_spec = {
-			'args' : ['start-singleuser.sh'],
-            'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
-			'mounts' : mounts
-          }
-
-c.SwarmSpawner.resource_spec = {}
+# c.SwarmSpawner.start_timeout = 60 * 60
+# c.SwarmSpawner.jupyterhub_service_name = os.environ.get('SWARMSPAWNER_HUB_SERVICE_NAME')
+# c.SwarmSpawner.service_prefix = os.environ.get('SWARMSPAWNER_SERVICE_PREFIX')
+# c.SwarmSpawner.networks = [os.environ.get('SWARMSPAWNER_NETWORK')]
+# c.SwarmSpawner.notebook_dir = os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR')
+# mounts = [{'type' : 'volume',
+# 'target' : os.environ.get('SWARMSPAWNER_NOTEBOOK_DIR'),
+# 'source' : 'jupyterhub-user-{username}',
+# 'no_copy' : True,
+# 'driver_config' : {
+#   'name' : 'local',
+#   'options' : {
+#      'type' : 'nfs4',
+# 	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+# 	 'device' : ':'+os.environ.get('NFSSERVER_USERDATA_DEVICE')
+#    }
+# }},{
+# 'type' : 'volume',
+# 'target' : '/srv/nbgrader/exchange',
+# 'source' : 'jupyter-exchange-volume',
+# 'no_copy' : True,
+# 'driver_config' : {
+#   'name' : 'local',
+#   'options' : {
+#      'type' : 'nfs4',
+# 	 'o' : 'addr='+os.environ.get('NFSSERVER_IP')+',rw',
+# 	 'device' : ':'+os.environ.get('NFSSERVER_ASSIGNMENTDATA_DEVICE')
+#    }
+# }}]
+#
+#
+# c.SwarmSpawner.teachers = [os.environ.get('SWARMSPAWNER_TEACHERS')]
+# c.SwarmSpawner.teacher_image = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
+# c.SwarmSpawner.student_image = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
+#
+# c.SwarmSpawner.container_spec = {
+# 			'args' : ['start-singleuser.sh'],
+#             'Image' : os.environ.get('SWARMSPAWNER_NOTEBOOK_IMAGE'),
+# 			'mounts' : mounts
+#           }
+#
+# c.SwarmSpawner.resource_spec = {}
 
 #SSL and Secret Config
 #c.JupyterHub.ssl_key = os.environ['SSL_KEY']
@@ -93,19 +93,19 @@ with open(os.path.join(pwd, 'bindDnTemplate')) as f:
         bindDnTemplate.append(line)
 
 # Persist hub data on volume mounted inside container
-data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
-c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
-c.JupyterHub.cookie_secret_file = os.path.join(data_dir,'jupyterhub_cookie_secret')
+#data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
+#c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
+#c.JupyterHub.cookie_secret_file = os.path.join(data_dir,'jupyterhub_cookie_secret')
 
 # Whitlelist users and admins
-c.Authenticator.admin_users = admin = set()
-c.JupyterHub.admin_access = True
-pwd = os.path.dirname(__file__)
-with open(os.path.join(pwd, 'userlist')) as f:
-    for line in f:
-        if not line:
-            continue
-        parts = line.split()
-        name = parts[0]
-        if len(parts) > 1 and parts[1] == 'admin':
-            admin.add(name)
+# c.Authenticator.admin_users = admin = set()
+# c.JupyterHub.admin_access = True
+# pwd = os.path.dirname(__file__)
+# with open(os.path.join(pwd, 'userlist')) as f:
+#     for line in f:
+#         if not line:
+#             continue
+#         parts = line.split()
+#         name = parts[0]
+#         if len(parts) > 1 and parts[1] == 'admin':
+#             admin.add(name)

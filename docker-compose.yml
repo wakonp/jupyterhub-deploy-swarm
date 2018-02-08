@@ -13,18 +13,21 @@ services:
     container_name: jupyterhub
     volumes:
       - type: bind
+        source: $(pwd)/jupyterhub_config.py
+        target: /srv/jupyterhub/jupyterhub_config.py
+      - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
-      - type: volume
-        source: jupyteruser
-        target: /jupyterUsers
-        volume: 
-          nocopy: true
-      - type: volume
-        source: jupyterhub
-        target: /data
-        volume: 
-          nocopy: true
+      # - type: volume
+      #   source: jupyteruser
+      #   target: /jupyterUsers
+      #   volume:
+      #     nocopy: true
+      # - type: volume
+      #   source: jupyterhub
+      #   target: /data
+      #   volume:
+      #     nocopy: true
     env_file:
       - .env
     deploy:
@@ -47,14 +50,14 @@ services:
     command: >
       start.sh
 
-volumes:
-  jupyterhub:
-    external:
-      name: jupyterhub-data
-  jupyteruser:
-    external:
-      name: jupyterhub-userdata
-networks:
-  default:
-    external: 
-      name: jupyterhub-network
+# volumes:
+#   jupyterhub:
+#     external:
+#       name: jupyterhub-data
+#   jupyteruser:
+#     external:
+#       name: jupyterhub-userdata
+# networks:
+#   default:
+#     external:
+#       name: jupyterhub-network
