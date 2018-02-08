@@ -69,7 +69,7 @@ c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 #c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with LDAP
-#c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
+c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
 c.LDAPAuthenticator.server_address = os.environ.get('LDAPAUTHENTICATOR_SERVER_ADDRESS')
 c.LDAPAuthenticator.server_port = int(os.environ.get('LDAPAUTHENTICATOR_SERVER_PORT'))
 c.LDAPAuthenticator.lookup_dn = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'

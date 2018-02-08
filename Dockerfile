@@ -7,7 +7,11 @@ RUN wget https://get.docker.com -q -O /tmp/getdocker && \
     chmod +x /tmp/getdocker && \
     sh /tmp/getdocker
 
+# install ldapauthenticator
+RUN pip install jupyterhub-ldapauthenticator
 
+# start juypterhub
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 # ENV HUB_USER jupyter
 #
 #
