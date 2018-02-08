@@ -17,7 +17,7 @@ c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
 c.JupyterHub.proxy_api_ip = os.environ.get('JUPYTERHUB_API_IP')
 c.JupyterHub.proxy_api_port =  int(os.environ.get('JUPYTERHUB_API_PORT'))
-c.JupyterHub.spawner_class = 'wakonp.SwarmSpawner'
+c.JupyterHub.spawner_class = 'wakonpspawner.SwarmSpawner'
 c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
