@@ -13,7 +13,7 @@ services:
     container_name: jupyterhub
     volumes:
       - type: bind
-        source: $(pwd)/jupyterhub_config.py
+        source: ./jupyterhub_config.py
         target: /srv/jupyterhub/jupyterhub_config.py
       - type: bind
         source: /var/run/docker.sock

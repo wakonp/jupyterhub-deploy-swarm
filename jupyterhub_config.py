@@ -17,7 +17,7 @@ c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
 c.JupyterHub.proxy_api_ip = os.environ.get('JUPYTERHUB_API_IP')
 c.JupyterHub.proxy_api_port =  int(os.environ.get('JUPYTERHUB_API_PORT'))
-c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
+#c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
 #c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
@@ -69,7 +69,7 @@ c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 #c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with LDAP
-c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
+#c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
 c.LDAPAuthenticator.server_address = os.environ.get('LDAPAUTHENTICATOR_SERVER_ADDRESS')
 c.LDAPAuthenticator.server_port = int(os.environ.get('LDAPAUTHENTICATOR_SERVER_PORT'))
 c.LDAPAuthenticator.lookup_dn = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
@@ -77,20 +77,20 @@ c.LDAPAuthenticator.user_search_base = os.environ.get('LDAPAUTHENTICATOR_USER_SE
 c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTRIBUTE')
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
 c.LDAPAuthenticator.allowed_groups = allowedgroups = []
-pwd = os.path.dirname(__file__)
-with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
-    for line in f:
-        if not line:
-            continue
-        allowedgroups.append(line)
+#pwd = os.path.dirname(__file__)
+#with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
+#    for line in f:
+#        if not line:
+#            continue
+#        allowedgroups.append(line)
 
-c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
-pwd = os.path.dirname(__file__)
-with open(os.path.join(pwd, 'bindDnTemplate')) as f:
-    for line in f:
-        if not line:
-            continue
-        bindDnTemplate.append(line)
+#c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
+#pwd = os.path.dirname(__file__)
+#with open(os.path.join(pwd, 'bindDnTemplate')) as f:
+#    for line in f:
+#        if not line:
+#            continue
+#        bindDnTemplate.append(line)
 
 # Persist hub data on volume mounted inside container
 #data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
