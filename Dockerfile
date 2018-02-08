@@ -10,6 +10,9 @@ RUN wget https://get.docker.com -q -O /tmp/getdocker && \
 # install ldapauthenticator
 RUN pip install jupyterhub-ldapauthenticator
 
+# install DockerSwarmSpawner
+RUN pip install jupyterhub-swarmspawner
+
 # start juypterhub
 CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 # ENV HUB_USER jupyter
