@@ -82,7 +82,7 @@ with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
    for line in f:
        if not line:
            continue
-       allowedgroups.append(line)
+       allowedgroups.append(line.replace("\n",""))
 c.LDAPAuthenticator.allowed_groups = allowedgroups
 
 bindDnTemplate = []
@@ -91,7 +91,7 @@ with open(os.path.join(pwd, 'bindDnTemplate')) as f:
    for line in f:
        if not line:
            continue
-       bindDnTemplate.append(line)
+       bindDnTemplate.append(line.replace("\n",""))
 c.LDAPAuthenticator.bind_dn_template = str(bindDnTemplate)
 
 # Persist hub data on volume mounted inside container
@@ -106,4 +106,4 @@ with open(os.path.join(pwd, 'adminusers')) as f:
     for line in f:
         if not line:
             continue
-        admin.add(line)
+        admin.add(line.replace("\n",""))
