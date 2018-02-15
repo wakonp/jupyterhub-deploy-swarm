@@ -8,8 +8,8 @@ RUN wget https://get.docker.com -q -O /tmp/getdocker && \
     sh /tmp/getdocker
 
 # install ldapauthenticator
-RUN pip install jupyterhub-ldapauthenticator
-
+#RUN pip install jupyterhub-ldapauthenticator
+RUN pip install  jupyterhub-ldapauthenticator-latest
 # install DockerSwarmSpawner
 RUN pip install jupyterhub-swarmspawner
 

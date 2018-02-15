@@ -76,29 +76,21 @@ c.LDAPAuthenticator.user_attribute = os.environ.get('LDAPAUTHENTICATOR_USER_ATTR
 c.LDAPAuthenticator.use_ssl = os.environ.get('LDAPAUTHENTICATOR_USE_SSL') == 'True'
 
 #GET allowedgroups and bindDnTemplate config from files
-allowedgroups = []
+c.LDAPAuthenticator.allowed_groups = allowedgroups = []
 pwd = os.path.dirname(__file__)
 with open(os.path.join(pwd, 'allowedLDAPGroups')) as f:
    for line in f:
        if not line:
            continue
        allowedgroups.append(line.replace("\n",""))
-c.LDAPAuthenticator.allowed_groups = allowedgroups
 
-# bindDnTemplate = []
-# pwd = os.path.dirname(__file__)
-# with open(os.path.join(pwd, 'bindDnTemplate')) as f:
-#    for line in f:
-#        if not line:
-#            continue
-#        bindDnTemplate.append(line.replace("\n",""))
-c.LDAPAuthenticator.bind_dn_template = [
-    'CN={username},OU=AIM15,OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local',
-    'CN={username},OU=AIM,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local',
-    'cn={username},ou=IMA,ou=Personal,ou=Benutzer,ou=Graz,ou=Technikum,dc=technikum,dc=fh-joanneum,dc=local',
-    'cn={username},OU=IMA16,OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local',
-    'cn={username},OU=IMA,OU=Studenten,OU=Benutzer,OU=Graz,OU=Technikum,DC=technikum,DC=fh-joanneum,DC=local'
-]
+c.LDAPAuthenticator.bind_dn_template = bindDnTemplate = []
+pwd = os.path.dirname(__file__)
+with open(os.path.join(pwd, 'bindDnTemplate')) as f:
+    for line in f:
+        if not line:
+            continue
+        bindDnTemplate.append(line.replace("\n",""))
 
 # Persist hub data on volume mounted inside container
 #data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
