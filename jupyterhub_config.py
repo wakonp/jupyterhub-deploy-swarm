@@ -92,6 +92,17 @@ with open(os.path.join(pwd, 'bindDnTemplate')) as f:
             continue
         bindDnTemplate.append(line.replace("\n",""))
 
+c.LDAPAuthenticator.pre_spawn_start
+
+def create_dir_hook(spawner):
+    username = spawner.user.name # get the username
+    os.system('docker exec -d jupyterhub_nfs useradd -d /exports/jupyterUsers/'+username.lower()+' -s /bin/bash -N -g students '+username.lower())
+    os.system('docker exec -d jupyterhub_nfs bash -c "mkdir -p /exports/jupyterUsers/'+username.lower()+' ; chown '+username.lower()+':students -R /exports/jupyterUsers/'+username.lower()+'"')
+    spawner.environment['NB_UID']=os.system('docker exec jupyterhub_nfs id -u ' +self.user.name).rstrip()
+    spawner.environment['NB_GID']=os.system('docker exec jupyterhub_nfs id -g ' +self.user.name).rstrip()
+
+c.Spawner.pre_spawn_hook = create_dir_hook
+
 # Persist hub data on volume mounted inside container
 #data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
 #c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
