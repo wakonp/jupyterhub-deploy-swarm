@@ -98,8 +98,13 @@ def create_dir_hook(spawner):
     username = spawner.user.name # get the username
     os.system('docker exec -d jupyterhub_nfs useradd -d /exports/jupyterUsers/'+username.lower()+' -s /bin/bash -N -g students '+username.lower())
     os.system('docker exec -d jupyterhub_nfs bash -c "mkdir -p /exports/jupyterUsers/'+username.lower()+' ; chown '+username.lower()+':students -R /exports/jupyterUsers/'+username.lower()+'"')
-    spawner.environment['NB_UID']=os.system('docker exec jupyterhub_nfs id -u ' +username.lower())
-    spawner.environment['NB_GID']=os.system('docker exec jupyterhub_nfs id -g ' +username.lower())
+
+    spawner.container_spec.env.NB_UID = os.system('docker exec jupyterhub_nfs id -u ' +username.lower()).rstrip();
+    spawner.container_spec.env.NB_GID = os.system('docker exec jupyterhub_nfs id -g ' +username.lower()).rstrip();
+    #if any(spawner.user.name in teacher for teacher in self.teachers):
+    #    spawner.container_spec['Image'] = self.teacher_image
+    #else:
+    #    spawner.container_spec['Image'] = self.student_image
 
 c.Spawner.pre_spawn_hook = create_dir_hook
 
