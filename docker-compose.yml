@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: walki12/jupyterhub:latest
+    image: walki12/jupyterhub:local
     container_name: jupyterhub
     volumes:
       - type: bind

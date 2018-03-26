@@ -15,7 +15,7 @@ c.JupyterHub.ip = os.environ.get('JUPYTERHUB_IP')
 c.JupyterHub.port = int(os.environ.get('JUPYTERHUB_PORT'))
 c.JupyterHub.hub_ip = os.environ.get('JUPYTERHUB_HUB_IP')
 c.JupyterHub.hub_port = int(os.environ.get('JUPYTERHUB_HUB_PORT'))
-c.JupyterHub.spawner_class = 'wakonpspawner.SwarmSpawner'
+c.JupyterHub.spawner_class = 'cassinyspawner.SwarmSpawner'
 c.JupyterHub.cleanup_servers = False
 c.JupyterHub.log_level = os.environ.get('JUPYTERHUB_LOG_LEVEL')
 
@@ -92,15 +92,13 @@ with open(os.path.join(pwd, 'bindDnTemplate')) as f:
             continue
         bindDnTemplate.append(line.replace("\n",""))
 
-c.LDAPAuthenticator.pre_spawn_start
-
 def create_dir_hook(spawner):
     username = spawner.user.name # get the username
     os.system('docker exec -d jupyterhub_nfs useradd -d /exports/jupyterUsers/'+username.lower()+' -s /bin/bash -N -g students '+username.lower())
     os.system('docker exec -d jupyterhub_nfs bash -c "mkdir -p /exports/jupyterUsers/'+username.lower()+' ; chown '+username.lower()+':students -R /exports/jupyterUsers/'+username.lower()+'"')
 
-    spawner.container_spec.env.NB_UID = os.system('docker exec jupyterhub_nfs id -u ' +username.lower()).rstrip();
-    spawner.container_spec.env.NB_GID = os.system('docker exec jupyterhub_nfs id -g ' +username.lower()).rstrip();
+    spawner.environment["NB_UID"] = subprocess.check_output(["docker","exec","jupyterhub_nfs","id","-u",username.lower()]);
+    spawner.environment["NB_GID"] = subprocess.check_output(["docker","exec","jupyterhub_nfs","id","-g",username.lower()]);
     #if any(spawner.user.name in teacher for teacher in self.teachers):
     #    spawner.container_spec['Image'] = self.teacher_image
     #else:

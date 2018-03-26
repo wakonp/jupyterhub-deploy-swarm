@@ -7,41 +7,36 @@ RUN wget https://get.docker.com -q -O /tmp/getdocker && \
     chmod +x /tmp/getdocker && \
     sh /tmp/getdocker
 
-# install ldapauthenticator
-#RUN pip install jupyterhub-ldapauthenticator
-RUN pip install  jupyterhub-ldapauthenticator-latest
-# install DockerSwarmSpawner
-RUN pip install jupyterhub-swarmspawner
+
 
 # start juypterhub
-CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
-# ENV HUB_USER jupyter
-#
-#
+
 # #Create Jupyterhubuser with access writes to /opt/conda
 # USER root
-# RUN useradd -s /bin/bash $HUB_USER
-# RUN chown $HUB_USER -R /opt/conda
-#
-# #Install LDAP Authenticator
-# ADD ./ldapauthenticator/ ./ldapauthenticator
-# RUN chown -R jupyter ./ldapauthenticator
-# WORKDIR ./ldapauthenticator
-# USER $HUB_USER
-# RUN python setup.py install
-# USER root
-# WORKDIR ..
+ENV HUB_USER jupyter
+RUN useradd -s /bin/bash $HUB_USER
+RUN chown $HUB_USER -R /opt/conda
+
+ #Install LDAP Authenticator
+ADD ./ldapauthenticator/ ./ldapauthenticator
+RUN chown -R jupyter ./ldapauthenticator
+WORKDIR ./ldapauthenticator
+#USER $HUB_USER
+RUN python setup.py install
+USER root
+WORKDIR ..
 
 #Install DockerSwarmSpawner
-# ADD ./SwarmSpawner ./SwarmSpawner
-# RUN chown -R $HUB_USER ./SwarmSpawner
-# WORKDIR ./SwarmSpawner
-# USER $HUB_USER
-# RUN pip install -r requirements.txt
-# RUN python setup.py install
-# USER root
-# WORKDIR ..
+ADD ./SwarmSpawner ./SwarmSpawner
+RUN chown -R $HUB_USER ./SwarmSpawner
+WORKDIR ./SwarmSpawner
+#USER $HUB_USER
+RUN pip install -r requirements.txt
+RUN python setup.py install
+USER root
+WORKDIR ..
 
+CMD ["jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py"]
 
 
 # # add $HUB_USER user to docker group
