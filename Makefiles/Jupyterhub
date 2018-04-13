@@ -4,8 +4,6 @@
 #JUPYTERHUB 
 jupyterhub_build:
 	@docker-compose build
-jupyterhub_push:
-	@docker push $(JUPYTERHUB_IMAGE)
 jupyterhub_start:
 	@docker stack deploy -c docker-compose.yml  $(JUPYTERHUB_SERVICE_PREFIX) >/dev/null 2>&1 && echo "JUPYTERHUB STARTED!"
 jupyterhub_remove:

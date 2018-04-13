@@ -6,12 +6,28 @@ include .env Makefiles/*
 .DEFAULT_GOAL=run
 #APPLICATION
 
-start: nfs_start nfs_config jupyterhub_start
-stop: jupyterhub_remove nfs_remove nginx_remove
-restart: stop start
-run: network_recreate nfs_run jupyterhub_run
-remove: jupyterhub_remove nfs_remove volumes_nfs_delete volumes_jupyterhub_delete network_remove nginx_remove
-rerun: remove run
-rebuild: remove jupyterhub_build jupyterhub_push jupyternotebook_updatenodes run
-	
-.PHONY: rebuild rerun remove run restart stop start 
+remove: jupyterhub_remove nfs_remove nginx_remove volumes_nfs_delete volumes_jupyterhub_delete network_remove
+run: network_recreate nfs_run jupyterhub_run nginx_run
+
+nfsENVFile=testNFS
+nfsConfigHosts=NFS_CONFIG_HOSTS
+
+check_nfs_config:
+	ifneq ($(findstring $(nfsConfigHosts),$(nfsENVFile)))
+		echo "found"
+	else
+		echo "not found"
+	endif
+
+update_nfs_swarm_node_ips:
+	@echo -n "$(nfsConfigHosts)=" >> $(nfsENVFile)
+	@for NODE in $(shell docker node ls --format '{{.Hostname}}') ; do \
+		docker node inspect --format '{{.Status.Addr}}' $$NODE | tr -d '\n' >> $(nfsENVFile) ; \
+		echo -n "," >> $(nfsENVFile) ; \
+	done
+	@truncate -s-1 $(nfsENVFile)
+	@echo "" >> $(nfsENVFile)
+
+test: check_nfs_config
+
+.PHONY: remove run test
