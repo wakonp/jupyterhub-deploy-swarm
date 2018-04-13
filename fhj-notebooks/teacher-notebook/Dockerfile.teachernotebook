@@ -172,5 +172,8 @@ ENV PATH /home/jovyan/ihaskell/.stack-work/install/x86_64-linux/lts-9.21/8.0.2/b
 
 
 WORKDIR /home/jovyan/ihaskell
+RUN echo "Test"
 COPY start.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/start.sh
+
 #COPY start-singleuser.sh /usr/local/bin

@@ -39,8 +39,8 @@ if [ $(id -u) == 0 ] ; then
     echo "Arguments: $*"
     echo "Programm: $1"
     echo "Programm Arguments: ${@:2}"
-    exec su $NB_USER -c "env PATH=$PATH $*"
-    #exec sudo -E -H -u $JPY_USER PATH=$PATH PYTHONPATH=$PYTHONPATH stack exec --allow-different-user $1 -- ${@:2}
+
+    exec sudo -E -H -u $JPY_USER PATH=$PATH PYTHONPATH=$PYTHONPATH stack exec --allow-different-user $1 -- ${@:2}
     #exec su $JPY_USER -c 'env PATH="$PATH:/opt/conda/bin" stack exec "$1" -- "${@:2}"' -- "$@"
 else
     # Exec the command

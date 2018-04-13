@@ -1,6 +1,6 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-FROM wakonp/teachernotebook:latest
+FROM walki12/teachernotebook:latest
 
 USER $NB_USER
 
