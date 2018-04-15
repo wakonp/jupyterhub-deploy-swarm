@@ -4,6 +4,7 @@
 #JUPYTERHUB VOLUMES
 volumes_nfs_create:
 	@(docker volume inspect $(NFSSERVER_VOLUME) >/dev/null 2>&1 && echo "NFS VOLUME ALREADY THERE!") || (docker volume create $(NFSSERVER_VOLUME) && echo "NFS VOLUME CREATED!")
+	@(docker volume inspect $(NFSSERVER_ETC_VOLUME) >/dev/null 2>&1 && echo "NFS ETC VOLUME ALREADY THERE!") || (docker volume create $(NFSSERVER_ETC_VOLUME) && echo "NFS ETC VOLUME CREATED!")
 volumes_nfs_delete:
 	@(docker volume rm $(NFSSERVER_VOLUME) >/dev/null 2>&1 &&  echo "NFS VOLUME REMOVED!") || echo "NFS VOLUME NOT PRESENT!"
 volumes_nfs_recreate: volumes_nfs_delete volumes_nfs_create

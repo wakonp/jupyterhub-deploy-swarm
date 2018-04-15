@@ -3,13 +3,19 @@
 
 #NFSSERVER
 nfs_start:
-	@docker run -p $(NFS_PORT):2049 -v $(NFSSERVER_VOLUME):/exports -d --name $(NFS_CONTAINER_NAME) --cap-add=SYS_ADMIN --env-file=$(NFS_ENV_FILE) $(NFS_IMAGE) $(NFS_SHARES)
+	@docker run -p $(NFS_PORT):2049 \
+		-v $(NFSSERVER_ETC_VOLUME):/etc \
+		-v $(NFSSERVER_VOLUME):/exports \
+		-d --name $(NFS_CONTAINER_NAME) \
+		--cap-add=SYS_ADMIN \
+		--env-file=$(NFS_ENV_FILE) \
+		$(NFS_IMAGE) $(NFS_SHARES)
 	@sleep 5
 	@echo "NFS Server started"
 nfs_config:
-	@docker exec -d jupyterhub_nfs groupadd students && echo "Group 'students' added!"
-	@docker exec -d jupyterhub_nfs groupadd teachers && echo "Group 'teachers' added!"
-	@docker exec -d jupyterhub_nfs useradd -s /bin/bash -N hubUser
+	@docker exec -d $(NFS_CONTAINER_NAME) groupadd students && echo "Group 'students' added!"
+	@docker exec -d $(NFS_CONTAINER_NAME) groupadd teachers && echo "Group 'teachers' added!"
+	@docker exec -d $(NFS_CONTAINER_NAME) useradd -s /bin/bash -N hubUser
 nfs_stop:
 	@docker stop jupyterhub_nfs 2>/dev/null || true
 nfs_remove: nfs_stop
