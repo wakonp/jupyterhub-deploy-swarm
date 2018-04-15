@@ -51,9 +51,7 @@ services:
         max_failure_ratio: 0.3
       placement:
         constraints:
-          - node.hostname == jupyterhubmanager
-    # command: >
-    #   start.sh
+          - node.hostname == ?HOSTNAME?
 
 volumes:
   jupyterhub:

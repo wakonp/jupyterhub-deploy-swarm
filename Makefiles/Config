@@ -32,5 +32,9 @@ update_nfs_swarm_node_ips:
 	@truncate -s-1 $(envNFSFile)
 	@echo "" >> $(envNFSFile)
 
+dockerComposeFile=docker-compose.yml
+dockerComposeTEMPLATE=?HOSTNAME?
+update_docker_compose_file:
+	@sed -i 's/$(dockerComposeTEMPLATE)/$(shell docker system info --format '{{ .Name }}')/g' $(dockerComposeFile)
 
-conf: check_nfs_config update_env_config
+conf: check_nfs_config update_env_config update_docker_compose_file
