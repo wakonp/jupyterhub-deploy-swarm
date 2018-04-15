@@ -1,3 +1,5 @@
+nginx/nginx.crt
+nginx/nginx.key
 .makelog
 .envNFS
 .DS_Store

@@ -49,10 +49,6 @@ mounts = [{'type' : 'volume',
    }
 }}]
 
-# c.SwarmSpawner.teachers = [os.environ.get('SWARMSPAWNER_TEACHERS')]
-# c.SwarmSpawner.teacher_image = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
-# c.SwarmSpawner.student_image = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
-
 
 c.SwarmSpawner.container_spec = {
 			'args' : ['start-singleuser.sh'],
@@ -61,10 +57,6 @@ c.SwarmSpawner.container_spec = {
           }
 
 c.SwarmSpawner.resource_spec = {}
-
-#SSL and Secret Config
-#c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-#c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with LDAP
 c.JupyterHub.authenticator_class = 'ldapauthenticator.LDAPAuthenticator'
@@ -99,17 +91,12 @@ def create_dir_hook(spawner):
 
     spawner.environment["NB_UID"] = subprocess.check_output(["docker","exec","jupyterhub_nfs","id","-u",username.lower()]);
     spawner.environment["NB_GID"] = subprocess.check_output(["docker","exec","jupyterhub_nfs","id","-g",username.lower()]);
-    #if any(spawner.user.name in teacher for teacher in self.teachers):
-    #    spawner.container_spec['Image'] = self.teacher_image
-    #else:
-    #    spawner.container_spec['Image'] = self.student_image
+    if any(spawner.user.name in teacher for teacher in [os.environ.get('SWARMSPAWNER_TEACHERS')]):
+        spawner.container_spec['Image'] = os.environ.get('SWARMSPAWNER_TNOTEBOOK_IMAGE')
+    else:
+        spawner.container_spec['Image'] = os.environ.get('SWARMSPAWNER_SNOTEBOOK_IMAGE')
 
 c.Spawner.pre_spawn_hook = create_dir_hook
-
-# Persist hub data on volume mounted inside container
-#data_dir = os.environ.get('JUPYTERHUB_DATA_VOLUME')
-#c.JupyterHub.db_url = os.path.join('sqlite:///', data_dir, 'jupyterhub.sqlite')
-#c.JupyterHub.cookie_secret_file = os.path.join(data_dir,'jupyterhub_cookie_secret')
 
 # Whitlelist admins
 c.Authenticator.admin_users = admin = set()
