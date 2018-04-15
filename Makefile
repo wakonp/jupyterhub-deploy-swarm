@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-include Makefiles/*
+include .env Makefiles/*
 
 .DEFAULT_GOAL=run
 #APPLICATION
