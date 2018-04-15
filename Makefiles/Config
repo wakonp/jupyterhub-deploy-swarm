@@ -1,0 +1,36 @@
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+#Jupyterhub config
+
+envFile=.env
+envFileNFSServerTEMPLATE=?NFSSERVER_IP?
+
+update_env_config:
+	@sed -i 's/$(envFileNFSServerTEMPLATE)/$(shell docker system info --format '{{ .Swarm.NodeAddr }}')/g' $(envFile)
+
+
+envNFSFile=.envNFS
+envNFSTemplateFile=.envNFSTEMPLATE
+nfsConfigHosts=NFS_CONFIG_HOSTS
+
+check_nfs_config:
+	@cp $(envNFSTemplateFile) $(envNFSFile)
+	@if grep -q $(nfsConfigHosts) $(envNFSFile) ; then \
+		echo "$(nfsConfigHosts) found in $(envNFSFile) - Continue ..." ;\
+	else \
+		echo "No $(nfsConfigHosts) found in $(envNFSFile) - Adding Docker Node IPs.." ; \
+		make update_nfs_swarm_node_ips; \
+	fi
+
+update_nfs_swarm_node_ips:
+	@echo -n "$(nfsConfigHosts)=" >> $(envNFSFile)
+	@for NODE in $(shell docker node ls --format '{{.Hostname}}') ; do \
+		docker node inspect --format '{{.Status.Addr}}' $$NODE | tr -d '\n' >> $(envNFSFile) ; \
+		echo -n "," >> $(envNFSFile) ; \
+	done
+	@truncate -s-1 $(envNFSFile)
+	@echo "" >> $(envNFSFile)
+
+
+conf: check_nfs_config update_env_config
