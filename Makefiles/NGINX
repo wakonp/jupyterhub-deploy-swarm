@@ -12,10 +12,10 @@ nginx_create_certificate:= openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 nginx_docker_service_start:= docker service create --name $(nginxName) \
 	--mount type=bind,src=$(shell pwd)/nginx/nginx.crt,dst=/etc/nginx/ssl/nginx.crt \
 	--mount type=bind,src=$(shell pwd)/nginx/nginx.key,dst=/etc/nginx/ssl/nginx.key \
-	--mount type=bind,src=$(shell pwd)/nginx/nginx.conf,dst=/etc/nginx/nginx.conf:ro \
+	--mount type=bind,src=$(shell pwd)/nginx/nginx.conf,dst=/etc/nginx/nginx.conf \
 	--publish mode=host,target=443,published=443 \
 	--publish mode=host,target=80,published=80 \
-	--constraint 'node.hostname = $(shell docker system info --format '{{ .Name }}')' \
+	--constraint 'node.hostname == $(shell docker system info --format '{{ .Name }}')' \
 	--network $(SWARMSPAWNER_NETWORK) \
 	nginx
 
