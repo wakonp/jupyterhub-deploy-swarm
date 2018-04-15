@@ -15,6 +15,7 @@ nginx_docker_service_start:= docker service create --name $(nginxName) \
 	--mount type=bind,src=$(shell pwd)/nginx/nginx.conf,dst=/etc/nginx/nginx.conf:ro \
 	--publish mode=host,target=443,published=443 \
 	--publish mode=host,target=80,published=80 \
+	--constraint 'node.hostname = $(shell docker system info --format '{{ .Name }}')' \
 	--network $(SWARMSPAWNER_NETWORK) \
 	nginx
 
